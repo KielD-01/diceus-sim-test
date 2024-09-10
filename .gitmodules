@@ -1,0 +1,3 @@
+[submodule "application/client"]
+	path = application/client
+	url = /home/roman/TestTasks/diceus-test-task/application/client
