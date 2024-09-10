@@ -1,0 +1,57 @@
+version: '3.9'
+
+networks:
+  diceus-sim-network:
+    name: diceus-sim-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 170.0.1.0/24
+
+volumes:
+  diceus-sim-caddy-config:
+    name: diceus-sim-caddy-config
+  diceus-sim-caddy-data:
+    name: diceus-sim-caddy-data
+
+services:
+  diceus-sim-api:
+    container_name: diceus-sim-api
+    image: devilbox/php-fpm:8.2-work
+    expose:
+      - 9000
+    volumes:
+      - ../application/api:/var/www/api
+    working_dir: /var/www/api
+    networks:
+      - diceus-sim-network
+
+  diceus-sim-client:
+    container_name: diceus-sim-client
+    image: node:20.2.0-alpine
+    volumes:
+      - ../application/client:/var/www/client
+    depends_on:
+      - diceus-sim-api
+    expose:
+      - 8080
+    working_dir: /var/www/client
+    networks:
+      - diceus-sim-network
+    command: sh -c "npm i && npm run serve"
+
+  diceus-sim-server:
+    container_name: diceus-sim-server
+    image: caddy/caddy:2.8.4-alpine
+    depends_on:
+      - diceus-sim-api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../application/api:/var/www/api
+      - ./local/caddy:/etc/caddy
+      - diceus-sim-caddy-config:/config
+      - diceus-sim-caddy-data:/data
+    networks:
+      - diceus-sim-network

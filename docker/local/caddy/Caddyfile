@@ -1,0 +1,17 @@
+diceus-sim.local {
+    handle {
+        reverse_proxy diceus-sim-client:8080 {
+            header_up Host {host}
+        }
+    }
+
+    file_server
+    encode gzip zstd
+}
+
+api.diceus-sim.local {
+    root * /var/www/api/public
+    encode gzip zstd
+    php_fastcgi diceus-sim-api:9000
+    file_server
+}
