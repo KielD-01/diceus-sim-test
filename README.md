@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Docker
+- Docker (PHP 8.2; Caddy 2; Node 20.2.0 Alpine)
 
 ## Setup
 
